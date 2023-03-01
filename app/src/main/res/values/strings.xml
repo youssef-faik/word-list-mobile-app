@@ -1,3 +1,5 @@
 <resources>
   <string name="app_name">WordsApp</string>
+  <string name="word_hint">Enter a word</string>
+  <string name="add_word">Add word</string>
 </resources>

@@ -3,7 +3,27 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
+  android:orientation="vertical"
   tools:context=".MainActivity">
 
+  <EditText
+    android:id="@+id/wordEditText"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    android:hint="@string/word_hint"
+    android:importantForAutofill="no"
+    android:minHeight="48dp"
+    android:padding="10dp"
+    android:textSize="16sp"
+    tools:ignore="TextFields,VisualLintTextFieldSize" />
+
+  <Button
+    android:id="@+id/addWordBtn"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="24dp"
+    android:layout_marginEnd="24dp"
+    android:text="@string/add_word" />
 
 </LinearLayout>

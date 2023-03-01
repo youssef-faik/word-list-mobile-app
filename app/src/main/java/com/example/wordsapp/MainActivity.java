@@ -1,11 +1,16 @@
 package com.example.wordsapp;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
 
 import org.json.JSONObject;
 
@@ -23,7 +28,20 @@ public class MainActivity extends AppCompatActivity {
   final OkHttpClient client = new OkHttpClient();
   EditText editText;
   Button addWordButton;
+  Button scanButton;
   String SERVER_PATH = "http://192.168.1.103:8089";
+
+  ActivityResultLauncher<ScanOptions> barLauncher = registerForActivityResult(
+    new ScanContract(),
+    result -> {
+      if (result.getContents() != null) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Result");
+        builder.setMessage(result.getContents());
+        builder.setPositiveButton("OK",
+          (dialogInterface, i) -> dialogInterface.dismiss()).show();
+      }
+    });
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
 
     editText = (EditText) findViewById(R.id.wordEditText);
     addWordButton = (Button) findViewById(R.id.addWordBtn);
+    scanButton = (Button) findViewById(R.id.scanBtn);
+
     addWordButton.setOnClickListener(v -> {
       try {
         JSONObject jsonObject = new JSONObject();
@@ -66,7 +86,17 @@ public class MainActivity extends AppCompatActivity {
         e.printStackTrace();
       }
     });
+
+    scanButton.setOnClickListener(view -> {
+      ScanOptions options = new ScanOptions();
+
+      options.setPrompt("Volume up to flash on");
+      options.setBeepEnabled(true);
+      options.setOrientationLocked(true);
+      options.setCaptureActivity(appCaptureActivity.class);
+
+      barLauncher.launch(options);
+    });
+
   }
-
-
 }

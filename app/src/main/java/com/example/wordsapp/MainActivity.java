@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     new ScanContract(),
     result -> {
       if (result.getContents() != null) {
+        sendMessage(result.getContents());
+
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("Result");
         builder.setMessage(result.getContents());
@@ -52,45 +54,11 @@ public class MainActivity extends AppCompatActivity {
     addWordButton = (Button) findViewById(R.id.addWordBtn);
     scanButton = (Button) findViewById(R.id.scanBtn);
 
-    addWordButton.setOnClickListener(v -> {
-      try {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("id", "");
-        jsonObject.put("name", editText.getText().toString());
-
-        RequestBody body = RequestBody
-          .create(
-            MediaType.parse("application/json"),
-            jsonObject.toString()
-          );
-
-        Request request = new Request.Builder()
-          .url(SERVER_PATH)
-          .post(body)
-          .build();
-
-        client.newCall(request).enqueue(new Callback() {
-          @Override
-          public void onFailure(Call call, IOException e) {
-            Toast.makeText(MainActivity.this, "Failed request", Toast.LENGTH_SHORT).show();
-          }
-
-          @Override
-          public void onResponse(Call call, Response response) {
-            if (response.isSuccessful()) {
-              runOnUiThread(() -> Toast.makeText(MainActivity.this, "Successful request", Toast.LENGTH_SHORT).show());
-            }
-          }
-        });
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    });
+    addWordButton.setOnClickListener(v -> sendMessage(editText.getText().toString()));
 
     scanButton.setOnClickListener(view -> {
       ScanOptions options = new ScanOptions();
 
-      options.setPrompt("Volume up to flash on");
       options.setBeepEnabled(true);
       options.setOrientationLocked(true);
       options.setCaptureActivity(appCaptureActivity.class);
@@ -98,5 +66,40 @@ public class MainActivity extends AppCompatActivity {
       barLauncher.launch(options);
     });
 
+  }
+
+  private void sendMessage(String message) {
+    try {
+      JSONObject jsonObject = new JSONObject();
+      jsonObject.put("id", "");
+      jsonObject.put("name", message);
+
+      RequestBody body = RequestBody
+        .create(
+          MediaType.parse("application/json"),
+          jsonObject.toString()
+        );
+
+      Request request = new Request.Builder()
+        .url(SERVER_PATH)
+        .post(body)
+        .build();
+
+      client.newCall(request).enqueue(new Callback() {
+        @Override
+        public void onFailure(Call call, IOException e) {
+          Toast.makeText(MainActivity.this, "Failed request", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onResponse(Call call, Response response) {
+          if (response.isSuccessful()) {
+            runOnUiThread(() -> Toast.makeText(MainActivity.this, "Successful request", Toast.LENGTH_SHORT).show());
+          }
+        }
+      });
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 }
